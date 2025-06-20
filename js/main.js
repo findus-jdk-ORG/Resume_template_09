@@ -1,7 +1,128 @@
-/* ===================================================================
- * Ceevee 2.0.0 - Main JS
- *
- * ------------------------------------------------------------------- */
+// Dynamic
+document.addEventListener("DOMContentLoaded", () => {
+  const c = siteContent;
+
+  // HERO SECTION
+  const heroSection = document.querySelector(".s-hero__content-about");
+  heroSection.querySelector("h1").textContent = c.hero.name;
+  heroSection.querySelector("h3").innerHTML = c.hero.description;
+
+  const socialEl = heroSection.querySelector(".s-hero__content-social");
+  c.hero.social.forEach(s => {
+    const a = document.createElement("a");
+    a.href = s.link;
+    a.target = "_blank";
+    a.innerHTML = `<i class="${s.icon}"></i>`;
+    socialEl.appendChild(a);
+  });
+
+  // ABOUT SECTION
+  const aboutSection = document.querySelector(".s-about__content");
+  aboutSection.querySelector("h3").textContent = c.about.title;
+  aboutSection.querySelector("p").textContent = c.about.description;
+
+  // CAREER SECTION
+  const careerSection = document.querySelectorAll(".s-resume__section")[0]
+    .querySelector(".column.large-9");
+  careerSection.innerHTML = "";
+  c.career.forEach(job => {
+    careerSection.innerHTML += `
+      <div class="resume-block">
+        <div class="resume-block__header">
+          <h4 class="h3">${job.company}</h4>
+          <p class="resume-block__header-meta">
+            <span>${job.role}</span>
+            <span class="resume-block__header-date">${job.period}</span>
+          </p>
+        </div>
+        <p>${job.description}</p>
+      </div>`;
+  });
+
+  // EDUCATION SECTION
+  const educationSection = document.querySelectorAll(".s-resume__section")[1]
+    .querySelector(".column.large-9");
+  educationSection.innerHTML = "";
+  c.education.forEach(edu => {
+    educationSection.innerHTML += `
+      <div class="resume-block">
+        <div class="resume-block__header">
+          <h4 class="h3">${edu.institute}</h4>
+          <p class="resume-block__header-meta">
+            <span>${edu.degree}</span>
+            <span class="resume-block__header-date">${edu.year}</span>
+          </p>
+        </div>
+        <p>${edu.description}</p>
+      </div>`;
+  });
+
+  // SKILLS SECTION
+  const skillsList = document.querySelector(".skill-bars-fat");
+  skillsList.innerHTML = "";
+  c.skills.forEach(skill => {
+    skillsList.innerHTML += `
+      <li>
+        <div class="progress ${skill.level}"></div>
+        <strong>${skill.name}</strong>
+      </li>`;
+  });
+
+  // PORTFOLIO
+  const portfolioGrid = document.querySelector(".folio-list");
+  portfolioGrid.innerHTML = "";
+  c.portfolio.forEach((p, i) => {
+    const modalId = `modal-${i + 1}`;
+    portfolioGrid.innerHTML += `
+      <div class="column folio-item">
+        <a href="#${modalId}" class="folio-item__thumb">
+          <img src="${p.thumb}" alt="${p.title}">
+        </a>
+      </div>`;
+
+    const modalContainer = document.createElement("div");
+    modalContainer.id = modalId;
+    modalContainer.hidden = true;
+    modalContainer.innerHTML = `
+      <div class="modal-popup">
+        <img src="${p.gallery}" alt="${p.title}" />
+        <div class="modal-popup__desc">
+          <h5>${p.title}</h5>
+          <p>${p.description}</p>
+          <ul class="modal-popup__cat">
+            ${p.categories.map(cat => `<li>${cat}</li>`).join("")}
+          </ul>
+        </div>
+        <a href="#" class="modal-popup__details">Project link</a>
+      </div>`;
+    document.querySelector(".s-portfolio").appendChild(modalContainer);
+  });
+
+  // TESTIMONIALS
+  const testimonialWrapper = document.querySelector(".testimonial-slider .swiper-wrapper");
+  testimonialWrapper.innerHTML = "";
+  c.testimonials.forEach(t => {
+    testimonialWrapper.innerHTML += `
+      <div class="testimonial-slider__slide swiper-slide">
+        <div class="testimonial-slider__author">
+          <img src="${t.img}" class="testimonial-slider__avatar" />
+          <cite class="testimonial-slider__cite">
+            <strong>${t.name}</strong>
+            <span>${t.title}</span>
+          </cite>
+        </div>
+        <p>${t.text}</p>
+      </div>`;
+  });
+
+  // CONTACT
+  const contactSection = document.querySelector(".s-about__content-bottom");
+  contactSection.querySelector("p").innerHTML = `
+    <a href="tel:${c.contact.phone}">${c.contact.phone}</a><br>
+    <a href="mailto:${c.contact.email}">${c.contact.email}</a>`;
+});
+
+// End
 
 (function(html) {
 
@@ -9,9 +130,6 @@
     
     html.className = html.className.replace(/\bno-js\b/g, '') + ' js ';
 
-
-   /* Preloader
-    * -------------------------------------------------- */
     const ssPreloader = function() {
 
         const preloader = document.querySelector('#preloader');
@@ -30,25 +148,14 @@
 
         });
 
-        // force page scroll position to top at page refresh
-        // window.addEventListener('beforeunload' , function () {
-        //     window.scrollTo(0, 0);
-        // });
+    }; 
 
-    }; // end ssPreloader
-
-
-   /* Parallax
-    * -------------------------------------------------- */
     const ssParallax = function() { 
 
         const rellax = new Rellax('.rellax');
 
-    }; // end ssParallax
+    };
 
-
-   /* Move header menu
-    * -------------------------------------------------- */
     const ssMoveHeader = function () {
 
         const hdr = document.querySelector('.s-header');
@@ -86,11 +193,8 @@
 
         });
 
-    }; // end ssMoveHeader
+    };
 
-
-   /* Mobile Menu
-    * ---------------------------------------------------- */ 
     const ssMobileMenu = function() {
 
         const toggleButton = document.querySelector('.s-header__menu-toggle');
@@ -125,36 +229,23 @@
             }
         });
 
-    }; // end ssMobileMenu
+    };
 
-
-   /* Highlight active menu link on pagescroll
-    * ------------------------------------------------------ */
     const ssScrollSpy = function() {
 
         const sections = document.querySelectorAll(".target-section");
 
-        // Add an event listener listening for scroll
         window.addEventListener("scroll", navHighlight);
 
         function navHighlight() {
         
             // Get current scroll position
             let scrollY = window.pageYOffset;
-        
-            // Loop through sections to get height(including padding and border), 
-            // top and ID values for each
             sections.forEach(function(current) {
                 const sectionHeight = current.offsetHeight;
                 const sectionTop = current.offsetTop - 50;
                 const sectionId = current.getAttribute("id");
             
-               /* If our current scroll position enters the space where current section 
-                * on screen is, add .current class to parent element(li) of the thecorresponding 
-                * navigation link, else remove it. To know which link is active, we use 
-                * sectionId variable we are getting while looping through sections as 
-                * an selector
-                */
                 if (scrollY > sectionTop && scrollY <= sectionTop + sectionHeight) {
                     document.querySelector(".s-header__nav a[href*=" + sectionId + "]").parentNode.classList.add("current");
                 } else {
@@ -163,11 +254,8 @@
             });
         }
 
-    }; // end ssScrollSpy
+    };
 
-
-   /* Swiper
-    * ------------------------------------------------------ */ 
     const ssSwiper = function() {
 
         const mySwiper = new Swiper('.swiper-container', {
@@ -191,11 +279,8 @@
             }
          });
 
-    }; // end ssSwiper
+    };
 
-
-   /* Lightbox
-    * ------------------------------------------------------ */
     const ssLightbox = function() {
 
         const folioLinks = document.querySelectorAll('.folio-item a');
@@ -227,11 +312,8 @@
             });
         });
 
-    };  // end ssLightbox
+    };
 
-
-   /* Alert boxes
-    * ------------------------------------------------------ */
     const ssAlertBoxes = function() {
 
         const boxes = document.querySelectorAll('.alert-box');
@@ -251,11 +333,8 @@
 
         })
 
-    }; // end ssAlertBoxes
+    };
 
-
-   /* Smoothscroll
-    * ------------------------------------------------------ */
     const ssSmoothScroll = function () {
         
         const triggers = document.querySelectorAll(".smoothscroll");
@@ -270,11 +349,8 @@
             });
         });
 
-    }; // end ssSmoothScroll
+    };
 
-
-   /* back to top
-    * ------------------------------------------------------ */
     const ssBackToTop = function() {
 
         const pxShow = 900;
@@ -293,12 +369,8 @@
             }
         });
 
-    }; // end ssBackToTop
+    };
 
-
-
-   /* initialize
-    * ------------------------------------------------------ */
     (function ssInit() {
 
         ssPreloader();
